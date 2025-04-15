@@ -1,18 +1,30 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '../views/HomeView.vue';
-const routes = [
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
   {
     path: '/',
-    name: 'home',
-    component: HomeView,  // 首页组件
+    name: 'LoginPage',
+    component: () => import('../views/LoginPage.vue'),  
   },
-];
-
-// 创建路由实例并传入配置
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),  
-  routes,
+  {
+    path: '/home',
+    name: 'HomePage',
+    component: () => import('../views/HomePage.vue'),
+  },
+  {
+    path: '/person',
+    name: 'PersonCenter',
+    component: () => import('../views/PersonCenter.vue'),  
+  },
+  {
+    path: '/chat',
+    name: 'ChatPage',
+    component: () => import('../views/ChatPage.vue'),  
+  },
+],
 });
 
 export default router;

@@ -5,9 +5,9 @@
     </div>
   </template>
   
-  <script>
+  <script set up>
   export default {
-    name: 'HomeView',
+    name: 'HomePage',
   };
   </script>
   

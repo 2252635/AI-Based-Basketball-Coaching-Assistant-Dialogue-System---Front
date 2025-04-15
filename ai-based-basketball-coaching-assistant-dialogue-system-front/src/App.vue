@@ -1,30 +1,31 @@
 <template>
   <div id="app">
-    <!-- 导航链接 -->
-    <router-link to="/">首页</router-link> | 
-    <hr />
-    <router-view></router-view> 
+    <RouterView />
   </div>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+<script setup>
+import { RouterView } from 'vue-router';
 </script>
 
 <style>
+/* 全局样式 */
+body, html, #app {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+}
+
+.router-view {
+  flex: 1;
 }
 </style>
