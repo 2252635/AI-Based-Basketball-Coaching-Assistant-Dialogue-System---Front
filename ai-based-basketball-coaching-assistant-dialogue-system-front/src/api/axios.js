@@ -19,8 +19,6 @@ API.interceptors.request.use(
         'account/check_email_registered/',
         'account/forgot_password_send_code/',
         'account/send_verification_code/',
-        'account/register/',
-        'account/reset_password/'
       ]; // 不需要附加 Authorization 头的路径
   
       // 检查当前请求路径是否在排除列表中

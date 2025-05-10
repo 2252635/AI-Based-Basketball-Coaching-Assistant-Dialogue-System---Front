@@ -1,12 +1,12 @@
 <template>
-    <div>
-      <h1>AI对话</h1>
+  <div>
+    <TopBar />
+    <div style="padding: 20px">
+    <p>开发进行中，很快上线，敬请期待！</p>
     </div>
-  </template>
-  
-  <script set up>
-  export default {
-    name: 'ChatPage',
-  };
-  </script>
-  
+  </div>
+</template>
+
+<script setup>
+import TopBar from '../components/TopBar.vue'
+</script>
