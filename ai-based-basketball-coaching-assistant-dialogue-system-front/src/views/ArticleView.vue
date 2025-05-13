@@ -1,7 +1,9 @@
 <template>
     <div class="page-background">
     <TopBar />
-      <div class="article-container">
+      <!-- 显示加载中组件 -->
+       <loadComponent v-if="loading" />
+       <div v-else class="article-container">
         <div class="go-back" @click="goBack">
         <el-icon class="back-icon"><ArrowLeft /></el-icon>
         <span class="back-text">返回</span>
@@ -18,6 +20,7 @@
 
 <script setup>
 import TopBar from '../components/TopBar.vue';
+import loadComponent from '../components/LoadComponent.vue';
 import { ArrowLeft } from '@element-plus/icons-vue';
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -28,6 +31,7 @@ const router = useRouter();
 const articleId = route.params.id; // 从路由参数获取文章id
 const articleTitle = ref("");
 const paragraphs = ref([]);
+const loading = ref(true);
 
 const fetchArticleContent = async () => {
   try {
@@ -36,11 +40,13 @@ const fetchArticleContent = async () => {
     paragraphs.value = response.data.content.split("\n").filter((p) => p.trim() !== "");
   } catch (error) {
     console.error("获取文章内容失败：", error);
+  } finally {
+    loading.value = false; // 数据加载完成后，设置 loading 为 false
   }
 };
 
 const goBack = () => {
-  router.push("/");
+  router.push("/home");
 };
 
 onMounted(() => {
