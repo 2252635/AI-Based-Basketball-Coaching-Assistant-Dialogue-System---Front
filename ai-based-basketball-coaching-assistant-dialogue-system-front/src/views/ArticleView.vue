@@ -51,13 +51,12 @@ onMounted(() => {
 <style scoped>
 .page-background {
   background-color: #f0f0f0;
-  min-height: 100vh;
-  padding: 20px;
+  height: 100vh;
 }
 .article-container {
   max-width: 800px;
   margin: 0 auto;
-  padding: 10px;
+  padding: 20px;
   position: relative;
   background-color: #ffffff;
   border-radius: 10px;
@@ -92,6 +91,9 @@ onMounted(() => {
   margin-top: 40px;
   text-align: justify;
   line-height: 1.6;
+  max-height: 750px;
+  overflow-y: auto;
+  padding-right: 8px;
 }
 
 h2 {
