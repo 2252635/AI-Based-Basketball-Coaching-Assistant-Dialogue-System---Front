@@ -1,7 +1,7 @@
 <template>
     <div>
       <div class="title">
-        <span>⬇️ 最热资料</span>
+        <span>⬇️ 最热资料 <span class="download-text">(点击下载)</span></span>
       </div>
       <div class="list-container">
         <ul class="list">
@@ -125,6 +125,11 @@
     color: #000;
     padding-bottom: 20px;
     border-bottom: 1px solid #e0e0e0;
+  }
+  .title .download-text {
+    font-size: 14px;
+    font-weight: normal;
+    color: #3c89db;
   }
   
   .list-container {
