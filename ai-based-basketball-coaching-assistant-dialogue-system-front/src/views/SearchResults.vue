@@ -4,7 +4,8 @@
     <div class="main-content">
       <ClassifyBar />
       <div class="page-content">
-        <div class="search-results-container">
+        <loadComponent v-if="loading" />
+        <div v-else class="search-results-container">
           <div class="search-bar">
             <input
               v-model="inputKeyword"
@@ -50,6 +51,7 @@ import KnowledgeItem from '../components/KnowledgeItem.vue'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+import loadComponent from '../components/LoadComponent.vue';
 
 const route = useRoute()
 const router = useRouter()
@@ -58,6 +60,7 @@ const inputKeyword = ref(keyword.value)
 const knowledgeList = ref([])
 const currentPage = ref(1)
 const pageSize = 3
+const loading = ref(true);
 
 const total = computed(() => knowledgeList.value.length)
 const totalPages = computed(() => Math.ceil(total.value / pageSize))
@@ -75,6 +78,8 @@ const fetchKnowledge = async () => {
     currentPage.value = 1
   } catch (error) {
     console.error('获取知识列表失败', error)
+  } finally {
+    loading.value = false; // 数据加载完成后，设置 loading 为 false
   }
 }
 
