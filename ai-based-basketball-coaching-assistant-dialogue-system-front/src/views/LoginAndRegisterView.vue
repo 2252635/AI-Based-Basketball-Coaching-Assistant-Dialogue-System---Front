@@ -162,8 +162,8 @@ const login = async () => {
 
 const checkEmailRegistered = async () => {
   try {
-    const response = await API.post('account/check_email_registered/', {
-      'email': registerEmail.value
+    const response = await API.get('/api/users/checkEmailRegistered', {
+      params: { email: registerEmail.value } // 使用 params 发送 email
     });
     return response.data.registered; // 返回邮箱是否已注册
   } catch (error) {
@@ -190,7 +190,7 @@ const getVerificationCode = async () => {
     if(isRegistered){
       // 如果是在修改密码状态，允许发送验证码
       try {
-            const response = await API.post('/api/users/sendCode/', {
+            const response = await API.post('/api/users/sendCode', {
               'email': registerEmail.value
             });
             ElMessage.success('验证码已发送，请检查您的邮箱');
@@ -216,7 +216,7 @@ const getVerificationCode = async () => {
     }
     // 调用注册的发送验证码接口
     try {
-      const response = await API.post('/api/users/sendCode/', {
+      const response = await API.post('/api/users/sendCode', {
         'email': registerEmail.value
       });
       ElMessage.success('验证码已发送，请检查您的邮箱');
