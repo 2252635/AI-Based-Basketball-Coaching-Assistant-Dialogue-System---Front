@@ -23,77 +23,96 @@
   
   
   <script setup>
-    import { Download} from '@element-plus/icons-vue'
-    // import { ref, onMounted } from 'vue';
-    // import API from 'axios';
-    // import { jsPDF } from "jspdf";
-    // import { ArrowRight } from '@element-plus/icons-vue'
+  import { Download } from '@element-plus/icons-vue';
+  import { ref, onMounted } from 'vue';
+  import API from '../api/axios';
+  import { PDFDocument, rgb } from "pdf-lib";
+  import fontkit from "@pdf-lib/fontkit"; // 引入fontkit以支持自定义字体
 
-    //const knowledgeList = ref([]);
-    const knowledgeList = [
-    { id: 1, title: '2025年CBA总决赛战术复盘与核心解析', content: '篮球教练培训手册：战术设计与球员培养', downloads: 520 },
-    { id: 2, title: '篮球教练培训手册：战术设计与球员培养', content: '篮球教练培训手册：战术设计与球员培养', downloads: 497 },
-    { id: 3, title: '篮球训练100讲：从基本功到高阶技巧', content: '篮球训练100讲：从基本功到高阶技巧', downloads: 465 }
-    ]
+  const knowledgeList = ref([]);
 
-    // // 获取最热资料
-    // const fetchTopDownloads = async () => {
-    //   try {
-    //     const response = await API.get('/api/articles/top-downloads');
-    //     knowledgeList.value = response.data;
-    //   } catch (error) {
-    //     console.error('获取最热资料失败：', error);
-    //   }
-    // };
+  const fetchTopDownloads = async () => {
+    try {
+      const response = await API.get('/api/articles/downloads/top8');
+      knowledgeList.value = response.data;
+    } catch (error) {
+      console.error('获取最热资料失败：', error);
+    }
+  };
 
-    // // 下载文章
-    // const downloadArticle = async (id, title) => {
-    //   try {
-    //     const response = await API.get(`/api/articles/download/${id}`);
-    //     const content = response.data.content;
-        
-    //     // 创建 PDF 文档
-    //     const doc = new jsPDF({
-    //       unit: 'pt',
-    //       format: 'a4'
-    //     });
+  const downloadArticle = async (id, title) => {
+    try {
+      const response = await API.get(`/api/articles/${id}`);
+      const content = response.data.content;
 
-    //     doc.setFont("Songti-SC"); // 设置字体：宋体
-    //     doc.setFontSize(12);      // 字号：五号
-    //     doc.setLineHeightFactor(1.3); // 行距：1.3倍
+      const pdfDoc = await PDFDocument.create();
+      pdfDoc.registerFontkit(fontkit);
 
-    //     // 标题
-    //     doc.setFontSize(16);
-    //     doc.text(title, 40, 40);
-    //     doc.setFontSize(12);
-    //     doc.setTextColor(0, 0, 0);
+      const fontBytes = await fetch('/fonts/NotoSansSC-Regular.otf').then(res => res.arrayBuffer()); // 替换为你的字体路径
+      const customFont = await pdfDoc.embedFont(fontBytes);
 
-    //     // 将 content 按换行符分成段落，逐行写入
-    //     const paragraphs = content.split("\n");
-    //     let y = 80;
-    //     paragraphs.forEach((paragraph) => {
-    //       if (paragraph.trim()) {
-    //         doc.text(paragraph, 40, y, { maxWidth: 520, align: "left" });
-    //         y += 20; // 段落间空行
-    //       }
-    //     });
+      let page = pdfDoc.addPage([595, 842]);
+      const { height } = page.getSize();
+      let y = height - 80;
 
-    //     // 保存 PDF
-    //     doc.save(`${title}.pdf`);
+      page.setFont(customFont);
+      page.setFontSize(12);
 
-    //     // 更新下载量和观看量
-    //     await API.post(`/api/articles/update-downloads/${id}`);
-    //     await API.post(`/api/articles/update-views/${id}`);
-    //     fetchTopDownloads(); // 刷新列表
-    //   } catch (error) {
-    //     console.error('下载文章失败：', error);
-    //   }
-    // };
+      page.drawText(title, { x: 40, y: y, size: 16, color: rgb(0, 0, 0) });
+      y -= 40;
 
-    // onMounted(() => {
-    //   fetchTopDownloads();
-    // });
-  </script>
+      const paragraphs = content.split("\n");
+      const lineHeight = 18;
+      paragraphs.forEach((paragraph) => {
+        const lines = wrapText(paragraph, customFont, 520, 12);
+        lines.forEach((line) => {
+          if (y < 40) {
+            page = pdfDoc.addPage([595, 842]);
+            y = height - 40;
+          }
+          page.drawText(line, { x: 40, y, size: 12, color: rgb(0, 0, 0) });
+          y -= lineHeight;
+        });
+        y -= lineHeight;
+      });
+
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `${title}.pdf`;
+      link.click();
+
+      await API.put(`/api/articles/views/increment/${id}`);
+      await API.put(`/api/articles/downloads/increment/${id}`);
+      fetchTopDownloads();
+    } catch (error) {
+      console.error('下载文章失败：', error);
+    }
+  };
+
+  const wrapText = (text, font, maxWidth, fontSize) => {
+    const lines = [];
+    let line = "";
+
+    for (const char of text) {
+      const width = font.widthOfTextAtSize(line + char, fontSize);
+      if (width > maxWidth) {
+        lines.push(line);
+        line = char;
+      } else {
+        line += char;
+      }
+    }
+
+    if (line) lines.push(line);
+    return lines;
+  };
+
+  onMounted(() => {
+    fetchTopDownloads();
+  });
+</script>
 
   
   <style scoped>

@@ -1,12 +1,108 @@
 <template>
-  <div>
+    <div class="page-background">
     <TopBar />
-    <div style="padding: 20px">
-    <p>开发进行中，很快上线，敬请期待！</p>
+      <div class="article-container">
+        <div class="go-back" @click="goBack">
+        <el-icon class="back-icon"><ArrowLeft /></el-icon>
+        <span class="back-text">返回</span>
+        </div>
+        <div class="content-area">
+        <h2>{{ articleTitle }}</h2>
+        <div class="article-content">
+            <p v-for="(paragraph, index) in paragraphs" :key="index">{{ paragraph }}</p>
+        </div>
+        </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import TopBar from '../components/TopBar.vue'
+import TopBar from '../components/TopBar.vue';
+import { ArrowLeft } from '@element-plus/icons-vue';
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import API from '../api/axios';
+
+const route = useRoute();
+const router = useRouter();
+const articleId = route.params.id; // 从路由参数获取文章id
+const articleTitle = ref("");
+const paragraphs = ref([]);
+
+const fetchArticleContent = async () => {
+  try {
+    const response = await API.get(`/api/articles/${articleId}`);
+    articleTitle.value = response.data.title;
+    paragraphs.value = response.data.content.split("\n").filter((p) => p.trim() !== "");
+  } catch (error) {
+    console.error("获取文章内容失败：", error);
+  }
+};
+
+const goBack = () => {
+  router.push("/");
+};
+
+onMounted(() => {
+  fetchArticleContent();
+});
 </script>
+
+<style scoped>
+.page-background {
+  background-color: #f0f0f0;
+  min-height: 100vh;
+  padding: 20px;
+}
+.article-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 10px;
+  position: relative;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.go-back {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px 12px;
+  background-color: #fbfbfb;
+  border-radius: 8px;
+}
+
+.go-back:hover {
+  background-color: #ebebeb;
+}
+
+.back-icon {
+  font-size: 20px;
+  color: black;
+  margin-right: 6px;
+}
+
+.back-text {
+  font-size: 16px;
+  color: #333;
+}
+
+.content-area {
+  margin-top: 40px;
+  text-align: justify;
+  line-height: 1.6;
+}
+
+h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.article-content {
+  font-size: 16px;
+  font-family: 'Songti-SC', serif;
+  white-space: pre-line; 
+}
+</style>
