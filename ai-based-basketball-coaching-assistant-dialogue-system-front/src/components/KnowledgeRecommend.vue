@@ -3,7 +3,8 @@
       <div class="title">
         <span>🔥 知识推荐</span>
       </div>
-      <div class="list-container">
+      <loadComponent v-if="loading" />
+      <div v-else class="list-container">
         <ul class="list">
             <li v-for="(item, index) in knowledgeList" :key="index">
             <span class="index" :class="'index-' + (index + 1)">{{ index + 1 }}</span>
@@ -23,20 +24,13 @@
   import { ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import API from '../api/axios';
+  import loadComponent from './LoadComponent.vue';
   // import { ArrowRight } from '@element-plus/icons-vue'
   
   const router = useRouter()
   const knowledgeList = ref([])
-  // const knowledgeList = [
-  //   { id: 1, title: '从入门到精通：篮球规则全图解', views: 156 },
-  //   { id: 2, title: '2024年NBA新秀潜力分析报告', views: 150 },
-  //   { id: 3, title: '5个被低估的防守技巧——职业球员也在用', views: 122 },
-  //   { id: 4, title: '篮球战术板：如何制定有效的比赛策略', views: 110 },
-  //   { id: 5, title: '篮球心理学：如何克服比赛焦虑', views: 98 },
-  //   { id: 6, title: 'NBA历史最佳球员排名及分析', views: 85 },
-  //   { id: 7, title: '篮球心理学：如何克服比赛焦虑', views: 98 },
-  //   { id: 8, title: 'NBA历史最佳球员排名及分析', views: 85 },
-  // ]
+  const loading = ref(true);
+  
   // 获取文章数据（观看次数前8）
   const fetchKnowledgeList = async () => {
     try {
@@ -44,6 +38,8 @@
       knowledgeList.value = response.data;
     } catch (error) {
       console.error('获取文章列表失败：', error);
+    } finally {
+      loading.value = false; // 数据加载完成后，隐藏加载中组件
     }
   };
 
@@ -61,7 +57,7 @@
       console.error('加载浏览量失败:', error)
     }
   }
-
+  
     onMounted(() => {
     fetchKnowledgeList()
   })

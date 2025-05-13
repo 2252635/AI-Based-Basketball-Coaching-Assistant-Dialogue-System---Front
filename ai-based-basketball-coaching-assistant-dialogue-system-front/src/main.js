@@ -5,6 +5,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue' //引入全部 El
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css';
 import zhCn from 'element-plus/es/locale/lang/zh-cn'//引入中文语言包
+import 'animate.css';
 
 const app = createApp(App)
 

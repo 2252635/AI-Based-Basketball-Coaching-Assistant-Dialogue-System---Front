@@ -1,9 +1,10 @@
 <template>
     <div>
       <div class="title">
-        <span>⬇️ 最热资料</span>
-      </div>
-      <div class="list-container">
+        <span>⬇️ 最热资料 <span class="download-text">(点击下载)</span></span>
+      </div> 
+      <loadComponent v-if="loading" />
+      <div v-else class="list-container">
         <ul class="list">
             <li v-for="(item, index) in knowledgeList" :key="index">
             <span class="index" :class="'index-' + (index + 1)">{{ index + 1 }}</span>
@@ -26,10 +27,12 @@
   import { Download } from '@element-plus/icons-vue';
   import { ref, onMounted } from 'vue';
   import API from '../api/axios';
+  import loadComponent from './LoadComponent.vue';
   import { PDFDocument, rgb } from "pdf-lib";
   import fontkit from "@pdf-lib/fontkit"; // 引入fontkit以支持自定义字体
 
   const knowledgeList = ref([]);
+  const loading = ref(true);
 
   const fetchTopDownloads = async () => {
     try {
@@ -37,6 +40,8 @@
       knowledgeList.value = response.data;
     } catch (error) {
       console.error('获取最热资料失败：', error);
+    } finally {
+      loading.value = false; // 数据加载完成后，隐藏加载中组件
     }
   };
 
@@ -125,6 +130,11 @@
     color: #000;
     padding-bottom: 20px;
     border-bottom: 1px solid #e0e0e0;
+  }
+  .title .download-text {
+    font-size: 14px;
+    font-weight: normal;
+    color: #3c89db;
   }
   
   .list-container {
