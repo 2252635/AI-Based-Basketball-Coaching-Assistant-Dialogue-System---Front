@@ -21,7 +21,7 @@
     methods: {
         goToDetail() {
         this.$router.push({
-            name: 'KnowledgeDetail',
+            name: 'ArticleView',
             params: { id: this.item.id },
             query: { keyword: this.keyword }
         });
