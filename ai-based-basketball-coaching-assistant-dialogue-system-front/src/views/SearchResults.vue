@@ -74,12 +74,23 @@ const fetchKnowledge = async () => {
     const response = await axios.post('http://localhost:8081/api/search', {
       keyword: keyword.value
     })
-    knowledgeList.value = response.data || []
+
+    const rawList = response.data || []
+
+    // 按 subsectionId 去重
+    const uniqueMap = new Map()
+    rawList.forEach(item => {
+      if (!uniqueMap.has(item.subsectionId)) {
+        uniqueMap.set(item.subsectionId, item)
+      }
+    })
+
+    knowledgeList.value = Array.from(uniqueMap.values())
     currentPage.value = 1
   } catch (error) {
     console.error('获取知识列表失败', error)
   } finally {
-    loading.value = false; // 数据加载完成后，设置 loading 为 false
+    loading.value = false
   }
 }
 
