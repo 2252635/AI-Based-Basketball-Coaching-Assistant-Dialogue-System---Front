@@ -5,12 +5,12 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
   {
-    path: '/login',
-    name: 'LoginPage',
-    component: () => import('../views/LoginPage.vue'),  
+    path: '/',
+    name: 'LoginAndRegisterView',
+    component: () => import('../views/LoginAndRegisterView.vue'),  
   },
   {
-    path: '/',
+    path: '/home',
     name: 'HomePage',
     component: () => import('../views/HomePage.vue'),
   },
