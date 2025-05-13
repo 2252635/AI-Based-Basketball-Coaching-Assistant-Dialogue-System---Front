@@ -29,6 +29,11 @@ const router = createRouter({
     name: 'ChatPage',
     component: () => import('../views/ChatPage.vue'),  
   },
+  {
+    path: '/article/:id',
+    name: 'ArticleView',
+    component: () => import('../views/ArticleView.vue'),  
+  },
 ],
 });
 

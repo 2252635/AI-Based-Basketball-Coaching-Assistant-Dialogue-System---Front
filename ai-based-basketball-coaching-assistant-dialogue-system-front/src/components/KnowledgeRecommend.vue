@@ -7,7 +7,7 @@
         <ul class="list">
             <li v-for="(item, index) in knowledgeList" :key="index">
             <span class="index" :class="'index-' + (index + 1)">{{ index + 1 }}</span>
-            <span class="text">{{ item.title }}</span>
+            <span class="text" @click="viewArticle(item.id)">{{ item.title }}</span>
             <span class="view"><el-icon><View /></el-icon>{{ item.views }}</span>
             </li>
         </ul>
@@ -19,18 +19,51 @@
   </template>
   
   <script setup>
-  import { View} from '@element-plus/icons-vue'
+  import { View } from '@element-plus/icons-vue'
+  //import { ref, onMounted } from 'vue'
+  import { useRouter } from 'vue-router'
+  //import API from '../api/axios';
   // import { ArrowRight } from '@element-plus/icons-vue'
   
+  const router = useRouter()
+  // const knowledgeList = ref([])
   const knowledgeList = [
-    { title: '从入门到精通：篮球规则全图解', views: 156 },
-    { title: '2024年NBA新秀潜力分析报告', views: 150 },
-    { title: '5个被低估的防守技巧——职业球员也在用', views: 122 },
-    { title: '篮球战术板：如何制定有效的比赛策略', views: 110 },
-    { title: '篮球心理学：如何克服比赛焦虑', views: 98 },
-    { title: 'NBA历史最佳球员排名及分析', views: 85 },
-    
+    { id: 1, title: '从入门到精通：篮球规则全图解', views: 156 },
+    { id: 2, title: '2024年NBA新秀潜力分析报告', views: 150 },
+    { id: 3, title: '5个被低估的防守技巧——职业球员也在用', views: 122 },
+    { id: 4, title: '篮球战术板：如何制定有效的比赛策略', views: 110 },
+    { id: 5, title: '篮球心理学：如何克服比赛焦虑', views: 98 },
+    { id: 6, title: 'NBA历史最佳球员排名及分析', views: 85 },
+    { id: 7, title: '篮球心理学：如何克服比赛焦虑', views: 98 },
+    { id: 8, title: 'NBA历史最佳球员排名及分析', views: 85 },
   ]
+  // // 获取文章数据（观看次数前8）
+  // const fetchKnowledgeList = async () => {
+  //   try {
+  //     const response = await API.get('/api/articles/top-views')
+  //     knowledgeList.value = response.data
+  //   } catch (error) {
+  //     console.error('Failed to fetch knowledge list:', error)
+  //   }
+  // }
+
+  // 点击标题跳转并更新views
+  const viewArticle = async (id) => {
+    try {
+      // 更新后端的views
+      //await API.post(`/api/articles/${id}/view`)
+      // 跳转到对应文章页面
+      router.push(`/article/${id}`)
+      // 更新文章列表（刷新views数据）
+      //fetchKnowledgeList()
+    } catch (error) {
+      console.error('Failed to update views:', error)
+    }
+  }
+
+  //   onMounted(() => {
+  //   fetchKnowledgeList()
+  // })
   </script>
   
   <style scoped>
@@ -83,6 +116,14 @@
     margin: 0 10px;
     word-break: break-word;
     text-align: left;
+    cursor: pointer;
+    max-width: 280px; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .text:hover {
+    color: #3c89db;
   }
   
   .view {
