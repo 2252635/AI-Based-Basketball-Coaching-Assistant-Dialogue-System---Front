@@ -170,7 +170,7 @@ const checkEmailRegistered = async () => {
     if (error.response) {
       ElMessage.error(error.response.data.error);
     } else {
-      ElMessage.error('检查邮箱是否注册失败');
+      ElMessage.error('检查失败');
     }
     return false; // 默认返回未注册
   }
