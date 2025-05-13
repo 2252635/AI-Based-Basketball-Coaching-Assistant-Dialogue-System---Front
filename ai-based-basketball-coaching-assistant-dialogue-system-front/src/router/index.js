@@ -35,11 +35,20 @@ const router = createRouter({
     component: () => import('../views/ArticleView.vue'),  
   },
   {
+    path: '/knowledge/:id', 
+    name: 'KnowledgeView',
+    component: () => import('../views/KnowledgeDetail.vue'),  
+  },
+  {
     path: '/search-results',
     name: 'searchResults',
     component: () => import('../views/SearchResults.vue'), 
   },
-  
+  {
+    path: '/knowledgeclass/:name',
+    name: 'KnowledgeClass',
+    component: () => import('@/views/KnowledgeClass.vue')
+  }
 ],
 });
 

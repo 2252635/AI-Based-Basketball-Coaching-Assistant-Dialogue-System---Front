@@ -1,6 +1,5 @@
 <template>
     <div class="knowledge-item" @click="goToDetail">
-      <!-- 使用 v-html 渲染高亮后的 HTML -->
       <h5 class="subsection" v-html="highlightedSubsectionName"></h5>
       <p class="content-preview" v-html="highlightedContentPreview"></p>
     </div>
@@ -20,16 +19,24 @@
     },
     methods: {
         goToDetail() {
+        // 新增：移除id中的连字符
+        // const cleanedId = this.item.subsectionId.replace(/-/g, '');
+        
         this.$router.push({
-            name: 'ArticleView',
-            params: { id: this.item.id },
-            query: { keyword: this.keyword }
+            name: 'KnowledgeView',
+            params: { 
+                id: this.item.subsectionId,
+             },  // 使用处理后的id
+            state: {
+                subsectionName: this.item.subsectionName
+            }
         });
         },
     },
     computed: {
       // 将关键词在标题中高亮显示
       highlightedSubsectionName() {
+        console.log(this.item)
         const subsection = this.item?.subsectionName || ''
         const keyword = this.keyword?.trim()
         if (!subsection || !keyword) return subsection

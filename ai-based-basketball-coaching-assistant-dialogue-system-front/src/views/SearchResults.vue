@@ -57,7 +57,7 @@ const keyword = ref(route.query.keyword || '')
 const inputKeyword = ref(keyword.value)
 const knowledgeList = ref([])
 const currentPage = ref(1)
-const pageSize = 4
+const pageSize = 3
 
 const total = computed(() => knowledgeList.value.length)
 const totalPages = computed(() => Math.ceil(total.value / pageSize))
@@ -103,80 +103,129 @@ onMounted(() => {
 
 .main-content {
   display: flex;
-  padding: 29px 23px;
+  flex-direction: column; /* 移动端优先垂直布局 */
+  padding: 2vh 3vw; /* 使用视窗单位 */
   flex: 1;
+  gap: 1.5rem; /* 使用现代间距属性 */
 }
 
 .page-content {
   flex: 1;
-  margin-left: 36px;
-  margin-right: 16px;
+  margin: 0; /* 重置默认边距 */
+  width: 100%;
+  transition: margin 0.3s ease; /* 添加过渡动画 */
 }
 
 .search-results-container {
-  padding: 20px;
+  padding: 1.5rem;
   background-color: #f9f9f9;
   border-radius: 10px;
-  min-height: calc(100vh - 200px); /* 根据实际情况调整这个值 */
+  min-height: calc(100vh - 160px); /* 动态调整最小高度 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .search-bar {
   display: flex;
-  margin-bottom: 16px;
-  gap: 10px;
-  justify-content: center;
+  flex-wrap: wrap; /* 允许换行 */
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  max-width: 800px; /* 限制最大宽度 */
+  margin: 0 auto 1.5rem; /* 居中显示 */
 }
 
 .search-input {
-  width: 300px;
-  padding: 8px;
-  font-size: 14px;
-  border-radius: 5px;
+  flex: 1 1 250px; /* 弹性宽度 */
+  min-width: 200px; /* 最小可读宽度 */
+  padding: 0.8rem;
+  font-size: 1rem;
+  border-radius: 8px;
   border: 1px solid #ccc;
 }
 
 .search-button {
-  padding: 8px 16px;
-  font-size: 14px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.search-button:hover {
-  background-color: #0056b3;
+  flex: 0 0 auto; /* 保持按钮原始宽度 */
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
 }
 
 .search-header {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 2rem;
+}
+
+.search-header h2 {
+  font-size: clamp(1.5rem, 2.5vw, 2rem); /* 响应式字体大小 */
+  margin-bottom: 0.5rem;
 }
 
 .knowledge-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  display: grid;
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .pagination {
-  margin-top: 20px;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1rem 0;
 }
 
 .pagination button {
-  padding: 6px 12px;
-  margin: 0 10px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
 }
 
-.pagination button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+/* 平板设备适配 */
+@media (min-width: 768px) {
+  .main-content {
+    flex-direction: row; /* 恢复横向布局 */
+  }
+  
+  .page-content {
+    margin-left: 2vw;
+    margin-right: 1vw;
+  }
+
+  .search-results-container {
+    padding: 2rem;
+  }
+}
+
+/* 小屏幕适配 */
+@media (max-width: 767px) {
+  .main-content {
+    padding: 2vh 1.5vw;
+  }
+
+  .search-bar {
+    flex-direction: column; /* 垂直排列 */
+  }
+
+  .search-input {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .search-button {
+    width: 100%;
+  }
+
+  .pagination {
+    flex-direction: column;
+  }
+}
+
+/* 大屏幕优化 */
+@media (min-width: 1200px) {
+  .search-results-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
 }
 </style>
