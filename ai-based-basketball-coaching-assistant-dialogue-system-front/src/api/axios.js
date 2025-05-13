@@ -16,8 +16,6 @@ API.interceptors.request.use(
       const token = localStorage.getItem('access_token');
       const excludedPaths = [
         '/api/users/login/',
-        'account/check_email_registered/',
-        'account/forgot_password_send_code/',
         '/api/users/sendCode/',
         '/api/users/register/',
       ]; // 不需要附加 Authorization 头的路径

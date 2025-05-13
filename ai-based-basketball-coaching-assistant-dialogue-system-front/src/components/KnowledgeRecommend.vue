@@ -3,7 +3,8 @@
       <div class="title">
         <span>🔥 知识推荐</span>
       </div>
-      <div class="list-container">
+      <loadComponent v-if="loading" />
+      <div v-else class="list-container">
         <ul class="list">
             <li v-for="(item, index) in knowledgeList" :key="index">
             <span class="index" :class="'index-' + (index + 1)">{{ index + 1 }}</span>
@@ -23,10 +24,12 @@
   import { ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import API from '../api/axios';
+  import loadComponent from './LoadComponent.vue';
   // import { ArrowRight } from '@element-plus/icons-vue'
   
   const router = useRouter()
   const knowledgeList = ref([])
+  const loading = ref(true);
   
   // 获取文章数据（观看次数前8）
   const fetchKnowledgeList = async () => {
@@ -35,6 +38,8 @@
       knowledgeList.value = response.data;
     } catch (error) {
       console.error('获取文章列表失败：', error);
+    } finally {
+      loading.value = false; // 数据加载完成后，隐藏加载中组件
     }
   };
 
@@ -45,14 +50,14 @@
       // 更新后端的views
       await API.put(`/api/articles/views/increment/${id}`);
       // 跳转到对应文章页面
-      router.push({ path: `/article/${id}`, query: { loading: 'true' } });
+      router.push(`/article/${id}`)
       // 更新文章列表（刷新views数据）
       fetchKnowledgeList()
     } catch (error) {
       console.error('加载浏览量失败:', error)
     }
   }
-
+  
     onMounted(() => {
     fetchKnowledgeList()
   })

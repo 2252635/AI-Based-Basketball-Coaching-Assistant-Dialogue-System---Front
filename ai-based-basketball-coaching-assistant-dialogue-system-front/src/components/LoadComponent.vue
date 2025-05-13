@@ -1,6 +1,6 @@
 <template>
     <div class="LoadingContainer">
-        <div class="loading">
+        <!-- <div class="loading">
         <div></div>
         <div></div>
         <div></div>
@@ -9,9 +9,9 @@
         <div></div>
         <div></div>
         <div></div>
-        </div>
+        </div> -->
         <div class="loading-text">
-            Loading...
+            加载中...
         </div>
     </div>
 
@@ -33,7 +33,7 @@
     margin-top:10px;
     margin-bottom: 20px;
 }
-.loading,
+/* .loading,
 .loading > div {
   position: relative;
   box-sizing: border-box;
@@ -155,7 +155,7 @@
   height: 24px;
   margin-top: -12px;
   margin-left: -12px;
-}
+} */
 
 @keyframes ball-spin-clockwise-fade {
   50% {
