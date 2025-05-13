@@ -40,12 +40,15 @@
   
   <script setup>
   import { ref } from 'vue'
+   import { useRouter } from 'vue-router'
   //import { Plus,CollectionTag } from '@element-plus/icons-vue'
   
   const searchText = ref('')
+  const router = useRouter()
   
   const search = () => {
     console.log('搜索关键词：', searchText.value)
+    router.push({ name: 'searchResults', query: { keyword: searchText.value } })
   }
   </script>
   <style scoped>
