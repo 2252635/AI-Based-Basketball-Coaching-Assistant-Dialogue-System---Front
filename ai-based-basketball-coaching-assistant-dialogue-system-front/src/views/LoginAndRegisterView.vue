@@ -132,9 +132,9 @@ const clearData = () => {
 ///////////////////////通信最终版
 const login = async () => {
   if (!loginEmail.value || !password.value) {
-    ElMessage.error('Please fill in all fields');
+    ElMessage.error('请填写完整信息');
   } else if (!validateEmail(loginEmail.value)) {
-    ElMessage.error('Email format is incorrect');
+    ElMessage.error('邮箱格式不正确');
   } else {
     try {
       const response = await API.post('/api/users/login/', {
@@ -179,7 +179,7 @@ const checkEmailRegistered = async () => {
 const getVerificationCode = async () => {
   if (isButtonDisabled.value) return; // 如果按钮被禁用，直接返回
   if (!registerEmail.value) {
-    ElMessage.error('Please enter an email'); // 提示邮箱不能为空
+    ElMessage.error('邮箱不能为空'); // 提示邮箱不能为空
     return; // 结束函数
   }
 
