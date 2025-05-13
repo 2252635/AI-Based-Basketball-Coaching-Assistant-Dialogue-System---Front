@@ -15,7 +15,7 @@
         text-color="#bbb"
         active-text-color="#fff"
       >
-        <el-menu-item index="/home">首页</el-menu-item>
+        <el-menu-item index="/">首页</el-menu-item>
         <el-menu-item index="/library">知识库</el-menu-item>
         <el-menu-item index="/person">个人中心</el-menu-item>
         <el-menu-item index="/chat">ai对话</el-menu-item>
