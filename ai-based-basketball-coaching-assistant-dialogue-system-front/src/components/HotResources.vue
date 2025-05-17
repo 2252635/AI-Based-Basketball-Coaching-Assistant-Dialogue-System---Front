@@ -1,122 +1,145 @@
 <template>
-    <div>
-      <div class="title">
-        <span>⬇️ 最热资料 <span class="download-text">(点击下载)</span></span>
-      </div> 
-      <loadComponent v-if="loading" />
-      <div v-else class="list-container">
-        <ul class="list">
-            <li v-for="(item, index) in knowledgeList" :key="index">
-            <span class="index" :class="'index-' + (index + 1)">{{ index + 1 }}</span>
-            <span class="text" @click="downloadArticle(item.id, item.title)">{{ item.title }}</span>
-            <span class="download">
-                <el-icon><Download /></el-icon>{{ item.downloads }}
-            </span>
-            </li>
-        </ul>
-        <!-- <div class="more">
-            <el-icon class="more-icon"><ArrowRight /></el-icon>
-            更多
-        </div> -->
-      </div>
+  <div>
+    <!-- 标题部分 -->
+    <div class="title">
+      <span>⬇️ 最热资料 <span class="download-text">(点击下载)</span></span>
+    </div> 
+    
+    <!-- 加载状态组件 -->
+    <loadComponent v-if="loading" />
+    
+    <!-- 数据加载完成后的列表容器 -->
+    <div v-else class="list-container">
+      <ul class="list">
+          <!-- 循环渲染知识列表 -->
+          <li v-for="(item, index) in knowledgeList" :key="index">
+          <!-- 带样式的序号 -->
+          <span class="index" :class="'index-' + (index + 1)">{{ index + 1 }}</span>
+          <!-- 可点击的标题，触发下载 -->
+          <span class="text" @click="downloadArticle(item.id, item.title)">{{ item.title }}</span>
+          <!-- 下载次数显示 -->
+          <span class="download">
+              <el-icon><Download /></el-icon>{{ item.downloads }}
+          </span>
+          </li>
+      </ul>
     </div>
-  </template>
-  
-  
-  <script setup>
-  import { Download } from '@element-plus/icons-vue';
-  import { ref, onMounted } from 'vue';
-  import API from '../api/axios';
-  import loadComponent from './LoadComponent.vue';
-  import { PDFDocument, rgb } from "pdf-lib";
-  import fontkit from "@pdf-lib/fontkit"; // 引入fontkit以支持自定义字体
+  </div>
+</template>
 
-  const knowledgeList = ref([]);
-  const loading = ref(true);
 
-  const fetchTopDownloads = async () => {
-    try {
-      const response = await API.get('/api/articles/downloads/top8');
-      knowledgeList.value = response.data;
-    } catch (error) {
-      console.error('获取最热资料失败：', error);
-    } finally {
-      loading.value = false; // 数据加载完成后，隐藏加载中组件
-    }
-  };
+<script setup>
+// 组件逻辑部分
+import { Download } from '@element-plus/icons-vue';
+import { ref, onMounted } from 'vue';
+import API from '../api/axios';
+import loadComponent from './LoadComponent.vue';
+import { PDFDocument, rgb } from "pdf-lib";
+import fontkit from "@pdf-lib/fontkit"; // 用于PDF字体处理
 
-  const downloadArticle = async (id, title) => {
-    try {
-      const response = await API.get(`/api/articles/${id}`);
-      const content = response.data.content;
+// 响应式数据
+const knowledgeList = ref([]); // 存储知识列表数据
+const loading = ref(true);     // 加载状态控制
 
-      const pdfDoc = await PDFDocument.create();
-      pdfDoc.registerFontkit(fontkit);
+// 获取下载量前8的文章
+const fetchTopDownloads = async () => {
+  try {
+    const response = await API.get('/api/articles/downloads/top8');
+    knowledgeList.value = response.data;
+  } catch (error) {
+    console.error('获取最热资料失败：', error);
+  } finally {
+    loading.value = false; // 无论成功失败都关闭加载状态
+  }
+};
 
-      const fontBytes = await fetch('/fonts/NotoSansSC-Regular.otf').then(res => res.arrayBuffer()); // 替换为你的字体路径
-      const customFont = await pdfDoc.embedFont(fontBytes);
+// 下载文章并生成PDF
+const downloadArticle = async (id, title) => {
+  try {
+    // 获取文章内容
+    const response = await API.get(`/api/articles/${id}`);
+    const content = response.data.content;
 
-      let page = pdfDoc.addPage([595, 842]);
-      const { height } = page.getSize();
-      let y = height - 80;
+    // 创建PDF文档
+    const pdfDoc = await PDFDocument.create();
+    pdfDoc.registerFontkit(fontkit); // 注册字体处理工具
 
-      page.setFont(customFont);
-      page.setFontSize(12);
+    // 加载中文字体（需要确保字体文件存在）
+    const fontBytes = await fetch('/fonts/NotoSansSC-Regular.otf').then(res => res.arrayBuffer());
+    const customFont = await pdfDoc.embedFont(fontBytes);
 
-      page.drawText(title, { x: 40, y: y, size: 16, color: rgb(0, 0, 0) });
-      y -= 40;
+    // 创建页面并设置初始坐标
+    let page = pdfDoc.addPage([595, 842]); // A4尺寸
+    const { height } = page.getSize();
+    let y = height - 80; // 初始Y坐标
 
-      const paragraphs = content.split("\n");
-      const lineHeight = 18;
-      paragraphs.forEach((paragraph) => {
-        const lines = wrapText(paragraph, customFont, 520, 12);
-        lines.forEach((line) => {
-          if (y < 40) {
-            page = pdfDoc.addPage([595, 842]);
-            y = height - 40;
-          }
-          page.drawText(line, { x: 40, y, size: 12, color: rgb(0, 0, 0) });
-          y -= lineHeight;
-        });
-        y -= lineHeight;
+    // 设置字体样式
+    page.setFont(customFont);
+    page.setFontSize(12);
+
+    // 绘制标题
+    page.drawText(title, { x: 40, y: y, size: 16, color: rgb(0, 0, 0) });
+    y -= 40; // 调整Y坐标
+
+    // 处理内容换行和分页
+    const paragraphs = content.split("\n");
+    const lineHeight = 18; // 行高设置
+    paragraphs.forEach((paragraph) => {
+      // 文本换行处理
+      const lines = wrapText(paragraph, customFont, 520, 12);
+      lines.forEach((line) => {
+        // 页面底部检测（留40边距）
+        if (y < 40) {
+          page = pdfDoc.addPage([595, 842]); // 创建新页面
+          y = height - 40; // 重置Y坐标
+        }
+        page.drawText(line, { x: 40, y, size: 12, color: rgb(0, 0, 0) });
+        y -= lineHeight; // 移动下一行
       });
+      y -= lineHeight; // 段落间距
+    });
 
-      const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([pdfBytes], { type: "application/pdf" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `${title}.pdf`;
-      link.click();
+    // 生成并下载PDF
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${title}.pdf`;
+    link.click();
 
-      await API.put(`/api/articles/views/increment/${id}`);
-      await API.put(`/api/articles/downloads/increment/${id}`);
-      fetchTopDownloads();
-    } catch (error) {
-      console.error('下载文章失败：', error);
+    // 更新浏览量和下载量
+    await API.put(`/api/articles/views/increment/${id}`);
+    await API.put(`/api/articles/downloads/increment/${id}`);
+    fetchTopDownloads(); // 刷新列表数据
+  } catch (error) {
+    console.error('下载文章失败：', error);
+  }
+};
+
+// 文本换行处理函数
+const wrapText = (text, font, maxWidth, fontSize) => {
+  const lines = [];
+  let line = "";
+
+  // 逐字符计算宽度
+  for (const char of text) {
+    const width = font.widthOfTextAtSize(line + char, fontSize);
+    if (width > maxWidth) {
+      lines.push(line); // 超过宽度换行
+      line = char;
+    } else {
+      line += char;
     }
-  };
+  }
 
-  const wrapText = (text, font, maxWidth, fontSize) => {
-    const lines = [];
-    let line = "";
+  if (line) lines.push(line);
+  return lines;
+};
 
-    for (const char of text) {
-      const width = font.widthOfTextAtSize(line + char, fontSize);
-      if (width > maxWidth) {
-        lines.push(line);
-        line = char;
-      } else {
-        line += char;
-      }
-    }
-
-    if (line) lines.push(line);
-    return lines;
-  };
-
-  onMounted(() => {
-    fetchTopDownloads();
-  });
+// 组件挂载时获取数据
+onMounted(() => {
+  fetchTopDownloads();
+});
 </script>
 
   
