@@ -20,21 +20,32 @@
         <el-menu-item index="/person">个人中心</el-menu-item>
         <el-menu-item index="/chat">ai对话</el-menu-item>
       </el-menu>
+      <!-- 右侧登出按钮 -->
+      <div class="logout-btn-wrapper">
+        <el-button type="danger" size="small" @click="handleLogout">登出</el-button>
+      </div>
     </el-header>
   </el-container>
 </template>
   
 <script setup>
 import { ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
-const route = useRoute();
+const route = useRoute()
+const router = useRouter()
 const activeMenu = ref(route.path);
 
 // 监听 route.path 的变化
 watch(() => route.path, (newPath) => {
   activeMenu.value = newPath;
 });
+// 登出操作
+const handleLogout = () => {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('userID');
+  router.push('/') // 跳转到登录页
+}
 </script>
 
 <style scoped>
@@ -85,5 +96,16 @@ watch(() => route.path, (newPath) => {
   color: #fff !important;
   font-weight: bold;
   border-bottom: 2px solid #fff;
+}
+
+.logout-btn-wrapper {
+  margin-left: auto;
+}
+
+.logout-btn-wrapper .el-button {
+  margin-left: 20px;
+  background-color: #f56c6c;
+  color: white;
+  border: none;
 }
 </style>
