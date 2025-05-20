@@ -137,14 +137,15 @@ const login = async () => {
     ElMessage.error('邮箱格式不正确');
   } else {
     try {
-      const response = await API.post('/api/users/login/', {
-        "email": loginEmail.value,
-        "password": password.value,
+      const response = await API.post('/api/users/login', null, {
+        params: {
+          email: loginEmail.value,
+          password: password.value
+        }
       });
-
-      ElMessage.success(response.data.message);
-      localStorage.setItem('userID', response.data.data.userID);
-      localStorage.setItem('access_token', response.data.data.access_token);
+      ElMessage.success('登录成功');
+      localStorage.setItem('access_token', response.data.token);
+      localStorage.setItem('userID', response.data.userId); 
       // if (response.data.data.role === 'Admin') {
       //   router.push('/Admin');  
       // } else {
@@ -163,14 +164,18 @@ const login = async () => {
 const checkEmailRegistered = async () => {
   try {
     const response = await API.get('/api/users/checkEmailRegistered', {
-      params: { email: registerEmail.value } // 使用 params 发送 email
+      params: { email: registerEmail.value }
     });
-    return response.data.registered; // 返回邮箱是否已注册
+
+    if (response.status === 200) {
+      // 邮箱未注册，可用
+      return false;
+    }
   } catch (error) {
-    if (error.response) {
-      ElMessage.error(error.response.data.error);
+    if (error.response && error.response.status === 409) {
+      return true;
     } else {
-      ElMessage.error('检查失败');
+      ElMessage.error("检查邮箱失败");
     }
     return false; // 默认返回未注册
   }
@@ -190,19 +195,21 @@ const getVerificationCode = async () => {
     if(isRegistered){
       // 如果是在修改密码状态，允许发送验证码
       try {
-            const response = await API.post('/api/users/sendCode', {
-              'email': registerEmail.value
-            });
-            ElMessage.success('验证码已发送，请检查您的邮箱');
-            realVerificationCode.value = response.data.verification_code; // 根据返回值调整
-            startCountdown();
-          } catch (error) {
-            if (error.response) {
-              ElMessage.error(error.response.data.error); // 提示错误信息
-            } else {
-              ElMessage.error('验证码发送失败'); // 提示一般错误
-            }
+        const response = await API.post('/api/users/sendCode', null, {
+          params: {
+            email: registerEmail.value
           }
+        });
+        ElMessage.success('验证码已发送，请检查您的邮箱');
+        realVerificationCode.value = response.data.verification_code; // 根据返回值调整
+        startCountdown();
+      } catch (error) {
+        if (error.response) {
+          ElMessage.error(error.response.data.error); // 提示错误信息
+        } else {
+          ElMessage.error('验证码发送失败'); // 提示一般错误
+        }
+      }
     }
     else{
       ElMessage.error('此邮箱未注册，请先注册'); // Prompt for already registered information
@@ -216,8 +223,10 @@ const getVerificationCode = async () => {
     }
     // 调用注册的发送验证码接口
     try {
-      const response = await API.post('/api/users/sendCode', {
-        'email': registerEmail.value
+      const response = await API.post('/api/users/sendCode', null, {
+        params: {
+          email: registerEmail.value
+        }
       });
       ElMessage.success('验证码已发送，请检查您的邮箱');
       realVerificationCode.value = response.data.verification_code; // 根据返回值调整
@@ -259,11 +268,15 @@ const register = async () => {
     ElMessage.error("两次输入的密码不一致")
   } else {
     try {
-      const response = await API.post('/api/users/register/', {
-        'email': registerEmail.value,
-        'password': newPassword.value,
-        'verification_code': verificationCode.value,
-        'role': userType.value // 如果需要发送角色的话
+      const response = await API.post('/api/users/register', {
+        email: registerEmail.value,
+        password: newPassword.value,
+        role: userType.value// 如果需要发送角色的话
+      },
+      {
+        params: {
+          code: verificationCode.value
+        }
       });
       message.value = response.data.message;
       ElMessage.success('注册成功');
@@ -286,14 +299,12 @@ const changPsw = async () => {
     ElMessage.error('邮箱格式不正确');
   } else if (newPassword.value !== confirmPassword.value) {
     ElMessage.error("两次输入的密码不一致")
-  } else if (!verificationCode.value || verificationCode.value !== realVerificationCode.value) {
-    ElMessage.error("验证码不正确");
   } else {
     try {
-      const response = await API.post('account/reset_password/', {
-        'email': registerEmail.value,
-        'new_password': newPassword.value,
-        'verification_code': verificationCode.value,
+      const response = await API.post('/api/users/resetPassword', {
+        email: registerEmail.value,
+        new_password: newPassword.value,
+        code: verificationCode.value,
       });
       message.value = response.data.message;
       ElMessage.success(message.value);

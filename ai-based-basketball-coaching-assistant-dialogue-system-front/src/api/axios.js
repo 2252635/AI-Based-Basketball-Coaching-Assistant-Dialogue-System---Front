@@ -2,7 +2,7 @@ import axios from 'axios';
 //import { ElMessage } from 'element-plus';
 
 const API = axios.create({
-  baseURL: 'http://localhost:8081',
+  baseURL: 'http://localhost:8082',
   withCredentials: true, // 允许跨域请求发送 Cookie，否则改为false
   timeout: 60000,
   headers: {
@@ -15,13 +15,15 @@ API.interceptors.request.use(
     (config) => {
       const token = localStorage.getItem('access_token');
       const excludedPaths = [
-        '/api/users/login/',
-        '/api/users/sendCode/',
-        '/api/users/register/',
+        '/api/users/login',
+        '/api/users/sendCode',
+        '/api/users/register',
+        '/api/users/checkEmailRegistered',
+        '/api/users/resetPassword',
       ]; // 不需要附加 Authorization 头的路径
   
       // 检查当前请求路径是否在排除列表中
-      const isExcluded = excludedPaths.some((path) => config.url.includes(path));
+      const isExcluded = excludedPaths.some((path) => config.url.startsWith(path));
   
       if (!isExcluded && token) {
         config.headers.Authorization = `Bearer ${token}`;
