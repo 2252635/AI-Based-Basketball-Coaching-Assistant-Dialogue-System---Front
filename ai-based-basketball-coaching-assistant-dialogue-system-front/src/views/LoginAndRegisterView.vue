@@ -303,7 +303,7 @@ const changPsw = async () => {
     try {
       const response = await API.post('/api/users/resetPassword', {
         email: registerEmail.value,
-        new_password: newPassword.value,
+        newPassword: newPassword.value,
         code: verificationCode.value,
       });
       message.value = response.data.message;
