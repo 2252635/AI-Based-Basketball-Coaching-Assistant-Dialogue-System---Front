@@ -1,0 +1,6 @@
+projectKey=AI-Based-Basketball-Coaching-Assistant
+serverUrl=http://localhost:9000
+serverVersion=25.3.0.104237
+dashboardUrl=http://localhost:9000/dashboard?id=AI-Based-Basketball-Coaching-Assistant
+ceTaskId=16fc2c13-dea9-4c16-b6bd-b5293fc996a7
+ceTaskUrl=http://localhost:9000/api/ce/task?id=16fc2c13-dea9-4c16-b6bd-b5293fc996a7

@@ -42,7 +42,7 @@
       knowledgeList.value = response.data;
     } catch (error) {
       console.error('Error fetching latest articles:', error);
-    }finally {
+    } finally {
       loading.value = false; // 数据加载完成后，隐藏加载中组件
     }
   };
@@ -54,7 +54,7 @@
       router.push(`/article/${id}`);
     } catch (error) {
       console.error('Error updating views:', error);
-    } 
+    }
   };
 
   // 格式化日期
