@@ -1,56 +1,134 @@
 <template>
-    <div class="search-container">
-      <!-- 左侧卡通图像 -->
-      <img src="@/assets/basketboy.png" alt="basketboy" class="basketboy-img" />
-  
-      <!-- 新增知识按钮
-      <el-button type="primary" class="add-knowledge-btn">
-        <el-icon><Plus /></el-icon>
-        新增知识
-      </el-button>-->
-  
-      <!-- 搜索框 -->
-      <div class="search-bar">
-        <el-input
-          v-model="searchText"
-          placeholder="请输入关键词"
-          size="large"
-          class="search-input"  
+  <div class="search-container">
+    <img src="@/assets/basketboy.png" alt="basketboy" class="basketboy-img" />
+
+    <div class="search-bar">
+      <el-input
+        v-model="searchText"
+        placeholder="请输入关键词"
+        size="large"
+        class="search-input"
+        clearable  
+        @keyup.enter="search"  
+        @input="handleInput"  
+      >
+        <template #append>
+          <el-button 
+            type="primary" 
+            @click="search"
+            :loading="searchLoading"  
+          >
+            搜索
+          </el-button>
+        </template>
+      </el-input>
+
+      <!-- 搜索建议 -->
+      <div 
+        v-if="showSuggestions"
+        class="suggestions-container"
+      >
+        <div 
+          v-for="(item, index) in suggestions"
+          :key="index"
+          class="suggestion-item"
+          @click="selectSuggestion(item)"
         >
-          <template #append>
-            <el-button type="primary" @click="search">
-              搜索
-            </el-button>
-          </template>
-        </el-input>
-      </div>
-  
-      <!-- 热门标签 
-      <div class="hot-tags">
-        <div class="hot-tags-title">
-            <el-icon><CollectionTag /></el-icon>
-            <span>热门标签</span>
+          {{ item }}
         </div>
-        <span class="tag-item">🏀 球星技术解析</span>
-        <span class="tag-item">🔥 NBA季后赛密技</span>
-        <span class="tag-item">👟 球鞋与装备指南</span>
-      </div>-->
+      </div>
     </div>
-  </template>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed,onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import { debounce } from 'lodash'
+
+const router = useRouter()
+const searchText = ref('')
+const searchLoading = ref(false)
+const lastSearch = ref('')
+
+// 建议列表（示例数据）
+const suggestionPool = ref([
+  '篮球基础教学',
+  'NBA球星解析',
+  '三分球训练技巧',
+  '篮球装备选购指南',
+  '赛事精彩集锦'
+])
+
+// 动态占位符（示例）
+const placeholders = ref([
+  '搜索篮球技巧...',
+  '输入球星名字...',
+  '查找训练方法...'
+])
+const currentPlaceholder = ref(placeholders.value[0])
+
+// 输入建议相关
+const showSuggestions = ref(false)
+const suggestions = computed(() => {
+  if (!searchText.value) return []
+  const text = searchText.value.toLowerCase()
+  return suggestionPool.value.filter(item => 
+    item.toLowerCase().includes(text)
+  ).slice(0, 5) // 最多显示5条
+})
+
+// 防抖处理输入
+const handleInput = debounce(() => {
+  showSuggestions.value = searchText.value.length > 0
+}, 300)
+
+// 选择建议
+const selectSuggestion = (text) => {
+  searchText.value = text
+  showSuggestions.value = false
+  search()
+}
+
+// 搜索逻辑
+const search = async () => {
+  const keyword = searchText.value.trim()
   
-  <script setup>
-  import { ref } from 'vue'
-   import { useRouter } from 'vue-router'
-  //import { Plus,CollectionTag } from '@element-plus/icons-vue'
-  
-  const searchText = ref('')
-  const router = useRouter()
-  
-  const search = () => {
-    console.log('搜索关键词：', searchText.value)
-    router.push({ name: 'searchResults', query: { keyword: searchText.value } })
+  if (!keyword) {
+    ElMessage.warning('请输入搜索内容')
+    return
   }
-  </script>
+  
+  if (keyword === lastSearch.value) {
+    ElMessage.info('已显示当前搜索结果')
+    return
+  }
+
+  try {
+    searchLoading.value = true
+    lastSearch.value = keyword
+    
+    // 模拟搜索过程
+    await new Promise(resolve => setTimeout(resolve, 800))
+    
+    router.push({ 
+      name: 'searchResults', 
+      query: { keyword } 
+    })
+  } finally {
+    searchLoading.value = false
+    showSuggestions.value = false
+  }
+}
+
+// 随机占位符（组件挂载时）
+onMounted(() => {
+  currentPlaceholder.value = placeholders.value[
+    Math.floor(Math.random() * placeholders.value.length)
+  ]
+})
+</script>
   <style scoped>
 .search-container {
   background-color: #323d82;
@@ -129,4 +207,33 @@
   padding: 4px 10px;
   border-radius: 12px;
 }*/
+.suggestions-container {
+  position: absolute;
+  width: 100%;
+  max-width: 700px;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  margin-top: 4px;
+  z-index: 2000;
+}
+
+.suggestion-item {
+  padding: 12px 20px;
+  color: #606266;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: left;
+}
+
+.suggestion-item:hover {
+  background: #f5f7fa;
+  color: #323d82;
+}
+
+/* 调整搜索容器高度 */
+.search-container {
+  height: 200px; /* 增加高度容纳建议列表 */
+}
+
 </style>
