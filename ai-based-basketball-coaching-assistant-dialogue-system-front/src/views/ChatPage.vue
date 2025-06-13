@@ -3,15 +3,17 @@
     <TopBar />
     <div class="container">
       <div class="header">
-        <h1>篮球知识问答系统</h1>
+        <h1>篮球知识问答</h1>
         <p>基于文心大模型的智能篮球问答助手</p>
       </div>
 
       <div class="messages" ref="messagesContainer">
         <div v-for="(msg, index) in messages" :key="index" 
             :class="['message', msg.type === 'user' ? 'user-message' : 'bot-message']">
-          <strong>{{ msg.type === 'user' ? '您：' : 'AI：' }}</strong>
-          {{ msg.content }}
+            <div class="message-bubble">
+              <span class="prefix">{{ msg.type === 'user' ? '我：' : 'AI：' }}</span>
+              <span>{{ msg.content }}</span>
+            </div>
         </div>
         <div v-if="loading" class="loading">AI正在思考中...</div>
       </div>
@@ -103,12 +105,13 @@ const scrollToBottom = () => {
 /* 保持原有样式，仅添加作用域 */
 .container {
   max-width: 800px;
-  margin: 20px auto;
+  margin: 10px auto;
   padding: 20px;
   width: 100%;
   min-height: 90vh;
   display: flex;
   flex-direction: column;
+  background-color: #e9f0f8;
 }
 
 .header {
@@ -130,70 +133,105 @@ const scrollToBottom = () => {
   border-radius: 10px;
   padding: 20px;
   margin-bottom: 20px;
-  background-color: #f9f9f9;
+  background: linear-gradient(to bottom, #f9f9f9, #ffffff);
+  scroll-behavior: smooth;
 }
 
 .message {
+  display: flex;
+  align-items: flex-start;
   margin-bottom: 20px;
+  max-width: 100%;
+}
+
+.avatar {
+  font-size: 24px;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.message-bubble {
+  background-color: #f1f1f1;
   padding: 12px 16px;
   border-radius: 15px;
-  max-width: 80%;
   word-wrap: break-word;
+  max-width: 80%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .user-message {
-  background-color: #e3f2fd;
-  margin-left: auto;
+  flex-direction: row-reverse;
+}
+
+.user-message .avatar {
+  margin-left: 10px;
+  margin-right: 0;
+}
+
+.user-message .message-bubble {
+  background-color: #d0ebff;
   border-bottom-right-radius: 5px;
 }
 
-.bot-message {
-  background-color: #ffffff;
+.bot-message .message-bubble {
+  background-color: #fff;
   border: 1px solid #e0e0e0;
-  margin-right: auto;
   border-bottom-left-radius: 5px;
+}
+
+.message-bubble .prefix {
+  font-weight: bold;
+  margin-right: 5px;
 }
 
 .input-container {
   display: flex;
   gap: 10px;
   padding: 10px;
-  background-color: #fff;
+  background-color: #e9f0f8;
   border-top: 1px solid #eee;
+  border-radius: 15px;
 }
 
 input[type="text"] {
   flex: 1;
-  padding: 15px;
-  border: 1px solid #e0e0e0;
+  padding: 15px 20px;
+  border: 1px solid #ddd;
   border-radius: 25px;
   font-size: 16px;
   outline: none;
+  transition: border-color 0.2s ease-in-out;
+}
+
+input[type="text"]:focus {
+  border-color: #ccc;
 }
 
 button {
-  padding: 15px 30px;
-  background-color: #007bff;
+  padding: 15px 25px;
+  background-color: black;
   color: white;
   border: none;
   border-radius: 25px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: black;
 }
 
 button:disabled {
-  background-color: #cccccc;
+  background-color: #ccc;
   cursor: not-allowed;
 }
 
 .loading {
   text-align: center;
-  color: #666;
+  color: #999;
   font-style: italic;
   padding: 10px;
 }
+
 </style>
