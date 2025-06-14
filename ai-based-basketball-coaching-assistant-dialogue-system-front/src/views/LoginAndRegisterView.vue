@@ -82,7 +82,7 @@ import 'animate.css';
 import { ref } from 'vue';
 import 'element-plus/dist/index.css';
 import { ElInput, ElButton, ElMessage } from 'element-plus';
-import API from '../api/axios';
+import API1 from '../api/axios_user';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 // 输入变量
@@ -137,7 +137,7 @@ const login = async () => {
     ElMessage.error('邮箱格式不正确');
   } else {
     try {
-      const response = await API.post('/api/users/login', null, {
+      const response = await API1.post('/api/users/login', null, {
         params: {
           email: loginEmail.value,
           password: password.value
@@ -163,7 +163,7 @@ const login = async () => {
 
 const checkEmailRegistered = async () => {
   try {
-    const response = await API.get('/api/users/checkEmailRegistered', {
+    const response = await API1.get('/api/users/checkEmailRegistered', {
       params: { email: registerEmail.value }
     });
 
@@ -195,7 +195,7 @@ const getVerificationCode = async () => {
     if(isRegistered){
       // 如果是在修改密码状态，允许发送验证码
       try {
-        const response = await API.post('/api/users/sendCode', null, {
+        const response = await API1.post('/api/users/sendCode', null, {
           params: {
             email: registerEmail.value
           }
@@ -223,7 +223,7 @@ const getVerificationCode = async () => {
     }
     // 调用注册的发送验证码接口
     try {
-      const response = await API.post('/api/users/sendCode', null, {
+      const response = await API1.post('/api/users/sendCode', null, {
         params: {
           email: registerEmail.value
         }
@@ -268,7 +268,7 @@ const register = async () => {
     ElMessage.error("两次输入的密码不一致")
   } else {
     try {
-      const response = await API.post('/api/users/register', {
+      const response = await API1.post('/api/users/register', {
         email: registerEmail.value,
         password: newPassword.value,
         role: userType.value// 如果需要发送角色的话
@@ -301,7 +301,7 @@ const changPsw = async () => {
     ElMessage.error("两次输入的密码不一致")
   } else {
     try {
-      const response = await API.post('/api/users/resetPassword', {
+      const response = await API1.post('/api/users/resetPassword', {
         email: registerEmail.value,
         newPassword: newPassword.value,
         code: verificationCode.value,
