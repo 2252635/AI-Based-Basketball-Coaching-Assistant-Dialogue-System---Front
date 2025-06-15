@@ -2,7 +2,7 @@ import axios from 'axios';
 //import { ElMessage } from 'element-plus';
 
 const API1 = axios.create({
-  baseURL: 'http://localhost:8082',
+  baseURL: 'http://150.158.88.34:8082',
   withCredentials: true, // 允许跨域请求发送 Cookie，否则改为false
   timeout: 60000,
   headers: {
