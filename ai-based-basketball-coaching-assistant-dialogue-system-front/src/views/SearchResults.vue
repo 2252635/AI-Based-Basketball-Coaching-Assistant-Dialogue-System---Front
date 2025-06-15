@@ -96,7 +96,7 @@ const pagedList = computed(() => {
 const fetchKnowledge = async () => {
   try {
     loading.value = true
-    const response = await axios.post('http://localhost:8081/api/search', {
+    const response = await API.post('/api/search', {
       keyword: keyword.value
     })
 

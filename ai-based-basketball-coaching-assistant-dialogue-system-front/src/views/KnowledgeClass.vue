@@ -51,8 +51,7 @@
   
   const fetchKnowledge = async () => {
     try {
-        
-      const response = await API.get('http://localhost:8081/api/content/by-section-name', {
+      const response = await API.get('/api/content/by-section-name', {
         params: {
         sectionName: sectionName.value
     }
