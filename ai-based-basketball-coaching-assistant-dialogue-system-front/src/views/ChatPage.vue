@@ -65,7 +65,7 @@ const sendQuestion = async () => {
     scrollToBottom()
     
     // 调用API
-    const response = await fetch('http://150.158.88.34:8080/api/ask', {
+    const response = await fetch('http://150.158.88.34:8000/api/ask', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
